@@ -1,0 +1,36 @@
+
+void boat1_roof()
+{
+     glBegin(GL_POLYGON);
+    glColor3ub(232,206,152);
+    glVertex2f(5.0f, -10.0f);
+    glVertex2f(15.0f,-10.0f);
+    glVertex2f(13.0f, -12.0f);
+    glVertex2f(7.0f, -12.0f);
+    glEnd();
+}
+void boat1_font()
+{
+      glBegin(GL_POLYGON);
+
+    glColor3ub(255,217,15); // White color
+
+    // Define semi-circle
+    float radius = 2.0;
+    float centerX = 10.0; // X coordinate of the center
+    float centerY = -10.0; // Y coordinate of the center
+    float pi = 3.14159265359;
+
+    for (int i = 0; i <= 180; i++) {
+        float angle = i * pi / 180.0;
+        glVertex2f(centerX + cos(angle) * radius, centerY + sin(angle) * radius);
+    }
+
+    glEnd();
+
+}
+void boat1()
+{
+    boat1_font();
+    boat1_roof();
+}

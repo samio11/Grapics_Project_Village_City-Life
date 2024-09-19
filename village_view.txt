@@ -1,0 +1,1159 @@
+#include <windows.h>
+#include <GL/glut.h>
+#include <math.h>
+
+float _moveTruck = 0.0f;  // Truck position
+float _moveCar = 0.0f;    // Car position
+float _wheelAngle = 0.0f; // Wheel rotation angle
+float _moveBoat = 0.0f;  // Boat position
+float _windMill = 0.0f;  // Global variable for the rotation angle
+
+float _moveCloud1 = -30.0f;  // Initial position of cloud1
+float _moveCloud2 = 30.0f;   // Initial position of cloud2
+int _directionCloud1 = 1;    // Direction flag for cloud1 (1 = moving right, -1 = moving left)
+int _directionCloud2 = -1;   // Direction flag for cloud2 (1 = moving right, -1 = moving left)
+void line1()
+{
+    glLineWidth(5);
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glBegin(GL_POLYGON); //ABCD
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(0.0f, 5.0f);
+    glVertex2f(30.0f, 5.0f);
+    glEnd();
+
+}
+
+void semi_circle_brush(float r,float x,float y)
+{
+      glBegin(GL_POLYGON);
+
+    glColor3ub(50, 205, 50);
+
+    // Define semi-circle
+    float radius = r;
+    float centerX = x; // X coordinate of the center
+    float centerY = y; // Y coordinate of the center
+    float pi = 3.14159265359;
+
+    for (int i = 0; i <= 180; i++) {
+        float angle = i * pi / 180.0;
+        glVertex2f(centerX + cos(angle) * radius, centerY + sin(angle) * radius);
+    }
+
+    glEnd();
+
+}
+
+void hillBorder()
+{
+    glColor3f(0.0f, 0.0f, 0.0f); // Border color
+    glLineWidth(2);
+    glBegin(GL_LINE_LOOP); //ABCD
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(-25.0f, 10.0f);
+    glVertex2f(-20.0f, 15.0f);
+    glVertex2f(-15.0f, 20.0f);
+    glVertex2f(-10.0f, 15.0f);
+    glVertex2f(-5.0f, 20.0f);
+    glVertex2f(0.0f, 25.0f);
+    glVertex2f(5.0f, 20.0f);
+    glVertex2f(10.0f, 15.0f);
+    glVertex2f(15.0f, 20.0f);
+    glVertex2f(20.0f, 15.0f);
+    glVertex2f(25.0f, 10.0f);
+    glVertex2f(30.0f, 5.0f);
+    glEnd();
+
+
+}
+
+void hill_left_Part()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(111, 78, 55);
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(-30.0f, 10.0f);
+    glVertex2f(-25.0f, 10.0f);
+    glEnd();
+    glColor3ub(1,1,1);
+    glLineWidth(2);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(-30.0f, 10.0f);
+    glVertex2f(-25.0f, 10.0f);
+    glEnd();
+    semi_circle_brush(2.6,-27.5,10);
+}
+void hill_right_Part()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(111, 78, 55);
+    glVertex2f(25.0f, 10.0f);
+    glVertex2f(30.0f, 10.0f);
+    glVertex2f(30.0f, 5.0f);
+    glEnd();
+    glColor3ub(1,1,1);
+    glLineWidth(2);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(25.0f, 10.0f);
+    glVertex2f(30.0f, 10.0f);
+    glVertex2f(30.0f, 5.0f);
+    glEnd();
+    semi_circle_brush(2.6,27.5,10);
+}
+
+void hill1()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(111, 78, 55);
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(-25.0f, 10.0f);
+    glVertex2f(-20.0f, 15.0f);
+    glVertex2f(-15.0f, 20.0f);
+    glVertex2f(-10.0f, 15.0f);
+    glVertex2f(-5.0f, 10.0f);
+    glVertex2f(0.0f, 5.0f);
+    glEnd();
+}
+
+void hill2()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(111, 78, 55);
+    glVertex2f(-10.0f, 15.0f);
+    glVertex2f(-5.0f, 20.0f);
+    glVertex2f(0.0f, 25.0f);
+    glVertex2f(5.0f, 20.0f);
+    glVertex2f(10.0f, 15.0f);
+    glVertex2f(5.0f, 10.0f);
+    glVertex2f(0.0f, 5.0f);
+    glVertex2f(-5.0f, 10.0f);
+    glVertex2f(-10.0f, 15.0f);
+    glEnd();
+}
+
+void hill3()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(111, 78, 55);
+    glVertex2f(0.0f, 5.0f);
+    glVertex2f(5.0f, 10.0f);
+    glVertex2f(10.0f, 15.0f);
+    glVertex2f(15.0f, 20.0f);
+    glVertex2f(20.0f, 15.0f);
+    glVertex2f(25.0f, 10.0f);
+    glVertex2f(30.0f, 5.0f);
+
+    glEnd();
+}
+
+void sky()
+{
+     glBegin(GL_POLYGON);
+    glColor3ub(255, 165, 79);
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(-30.0f, 30.0f);
+    glVertex2f(0.0f, 30.0f);
+    glVertex2f(30.0f, 30.0f);
+    glVertex2f(30.0f, 5.0f);
+    glEnd();
+}
+
+
+// For Sun
+
+   void sun(float radius, float cX, float cY)
+   {
+    glBegin(GL_POLYGON);
+    for(int i=0;i<200;i++)
+        {
+            glColor3ub(255, 223, 0);
+            float pi=3.1416;
+            float A=(i*2*pi)/200;
+            float r=radius;
+            float x = r * cos(A);
+            float y = r * sin(A);
+            glVertex2f(x+cX,y+cY);
+
+        }
+        glEnd();
+   }
+
+      void tree_circle(float radius, float cX, float cY)
+   {
+    glBegin(GL_POLYGON);
+    for(int i=0;i<200;i++)
+        {
+            glColor3ub(50, 205, 50);
+            float pi=3.1416;
+            float A=(i*2*pi)/200;
+            float r=radius;
+            float x = r * cos(A);
+            float y = r * sin(A);
+            glVertex2f(x+cX,y+cY);
+
+        }
+        glEnd();
+   }
+
+
+ void cloud_circle(float radius, float cX, float cY)
+   {
+    glBegin(GL_POLYGON);
+    for(int i=0;i<200;i++)
+        {
+            glColor3ub(255, 255, 240);
+            float pi=3.1416;
+            float A=(i*2*pi)/200;
+            float r=radius;
+            float x = r * cos(A);
+            float y = r * sin(A);
+            glVertex2f(x+cX,y+cY);
+
+        }
+        glEnd();
+   }
+void main_street()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(54, 69, 79);
+    glVertex2f(-30.0f, -5.0f);
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(30.0f, 5.0f);
+    glVertex2f(30.0f, -5.0f);
+    glEnd();
+      // White Border
+     glLineWidth(3);
+    glColor3ub(255,255,255);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-30.0f, 0.0f);
+    glVertex2f(0.0f, 0.0f);
+    glVertex2f(30.0f, 0.0f);
+    glEnd();
+     // Black Border
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-30.0f, -5.0f);
+    glVertex2f(-30.0f, 5.0f);
+    glVertex2f(30.0f, 5.0f);
+    glVertex2f(30.0f, -5.0f);
+    glEnd();
+}
+
+void cloud1()
+{
+    glPushMatrix();
+    glTranslatef(_moveCloud1, 0.0f, 0.0f);  // Move cloud1 along the X-axis
+    cloud_circle(1.5,-25.0,25.0);
+    cloud_circle(1.5,-26.8,25.0);
+    cloud_circle(1.5,-26.0,26.3);
+    glPopMatrix();
+}
+
+void clude2()
+{
+    glPushMatrix();
+    glTranslatef(_moveCloud2, 0.0f, 0.0f);  // Move cloud2 along the X-axis
+    cloud_circle(1.5,20.0,25.0);
+    cloud_circle(1.5,21.8,25.0);
+    cloud_circle(1.5,21.0,26.3);
+    glPopMatrix();
+}
+
+void street_tree()
+{
+    glLineWidth(4);
+    glColor3ub(160, 82, 4);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-25.0f, -5.0f);
+    glVertex2f(-25.0f, -2.0f);
+    glEnd();
+    tree_circle(1.5,-25.0, -2.0);
+    tree_circle(1.5,-25.0, -1.0);
+
+}
+void trees()
+{
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(0.0,0.0,0);
+    street_tree();
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(10.0,0.0,0);
+    street_tree();
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(20.0,0.0,0);
+    street_tree();
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(30.0,0.0,0);
+    street_tree();
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(40.0,0.0,0);
+    street_tree();
+    glPopMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(50.0,0.0,0);
+    street_tree();
+    glPopMatrix();
+
+}
+
+
+void truck_wheel(float radius, float cX, float cY)
+{
+    glPushMatrix();
+    glTranslatef(cX, cY, 0);
+    glRotatef(_wheelAngle, 0.0f, 0.0f, 1.0f);  // Apply rotation based on _wheelAngle
+    glTranslatef(-cX, -cY, 0);  // Translate back after rotation
+
+    glBegin(GL_POLYGON);
+    for (int i = 0; i < 200; i++)
+    {
+        glColor3ub(20, 20, 20);
+        float pi = 3.1416;
+        float A = (i * 2 * pi) / 200;
+        float r = radius;
+        float x = r * cos(A);
+        float y = r * sin(A);
+        glVertex2f(x + cX, y + cY);
+    }
+    glEnd();
+
+    glPopMatrix();
+}
+
+void truck_box()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(178, 34, 34);
+    glVertex2f(-13.0f, 1.0f);
+    glVertex2f(-13.0f, 4.0f);
+    glVertex2f(-9.0f, 4.0f);
+    glVertex2f(-9.0f, 1.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1, 1, 1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-13.0f, 1.0f);
+    glVertex2f(-13.0f, 4.0f);
+    glVertex2f(-9.0f, 4.0f);
+    glVertex2f(-9.0f, 1.0f);
+    glEnd();
+}
+
+void truck_front()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(220, 20, 60);
+    glVertex2f(-13.0f, 1.0f);
+    glVertex2f(-13.0f, 2.0f);
+    glVertex2f(-16.0f, 2.0f);
+    glVertex2f(-16.0f, 1.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1, 1, 1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-13.0f, 1.0f);
+    glVertex2f(-13.0f, 2.0f);
+    glVertex2f(-16.0f, 2.0f);
+    glVertex2f(-16.0f, 1.0f);
+    glEnd();
+}
+
+void truck_glass()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(173, 216, 230);
+    glVertex2f(-13.0f, 2.0f);
+    glVertex2f(-13.0f, 4.0f);
+    glVertex2f(-14.0f, 4.0f);
+    glVertex2f(-16.0f, 2.0f);
+    glVertex2f(-13.0f, 2.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1, 1, 1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-13.0f, 2.0f);
+    glVertex2f(-13.0f, 4.0f);
+    glVertex2f(-14.0f, 4.0f);
+    glVertex2f(-16.0f, 2.0f);
+    glVertex2f(-13.0f, 2.0f);
+    glEnd();
+}
+
+void truck()
+{
+    glPushMatrix();
+    glTranslatef(_moveTruck, 0.0f, 0.0f);  // Move truck based on _moveTruck variable
+    truck_glass();
+    truck_front();
+    truck_box();
+    truck_wheel(0.8, -14.0, 1.0);
+    truck_wheel(0.8, -11.0, 1.0);
+    glPopMatrix();
+}
+
+void car_wheel(float radius, float cX, float cY)
+{
+    glPushMatrix();
+    glTranslatef(cX, cY, 0);
+    glRotatef(_wheelAngle, 0.0f, 0.0f, 1.0f);  // Apply rotation based on _wheelAngle
+    glTranslatef(-cX, -cY, 0);  // Translate back after rotation
+
+    glBegin(GL_POLYGON);
+    for (int i = 0; i < 200; i++)
+    {
+        glColor3ub(20, 20, 20);
+        float pi = 3.1416;
+        float A = (i * 2 * pi) / 200;
+        float r = radius;
+        float x = r * cos(A);
+        float y = r * sin(A);
+        glVertex2f(x + cX, y + cY);
+    }
+    glEnd();
+
+    glPopMatrix();
+}
+
+void car_body()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(105, 105, 105);
+    glVertex2f(7.0f, -4.0f);
+    glVertex2f(7.0f, -3.0f);
+    glVertex2f(13.0f, -3.0f);
+    glVertex2f(13.0f, -4.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1, 1, 1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(7.0f, -4.0f);
+    glVertex2f(7.0f, -3.0f);
+    glVertex2f(13.0f, -3.0f);
+    glVertex2f(13.0f, -4.0f);
+    glEnd();
+}
+
+void car_glass()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(173, 216, 230);
+    glVertex2f(8.0f, -3.0f);
+    glVertex2f(9.0f, -2.0f);
+    glVertex2f(11.0f, -2.0f);
+    glVertex2f(12.0f, -3.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1, 1, 1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(8.0f, -3.0f);
+    glVertex2f(9.0f, -2.0f);
+    glVertex2f(11.0f, -2.0f);
+    glVertex2f(12.0f, -3.0f);
+    glEnd();
+}
+
+void car()
+{
+    glPushMatrix();
+    glTranslatef(_moveCar, 0.0f, 0.0f);  // Move car based on _moveCar variable
+    car_body();
+    car_glass();
+    car_wheel(0.8, 9.0, -4.0);
+    car_wheel(0.8, 11.0, -4.0);
+    glPopMatrix();
+}
+
+void road2()
+{
+     glBegin(GL_POLYGON);
+    glColor3ub(54, 69, 79);
+    glVertex2f(0.0f, -5.0f);
+    glVertex2f(0.0f, -25.0f);
+    glVertex2f(4.0f, -25.0f);
+    glVertex2f(4.0f, -5.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(54, 69, 79);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(0.0f, -5.0f);
+    glVertex2f(0.0f, -25.0f);
+    glVertex2f(4.0f, -25.0f);
+    glVertex2f(4.0f, -5.0f);
+    glEnd();
+}
+void green_land()
+{
+     glBegin(GL_POLYGON);
+    glColor3ub(144, 238, 144);
+    glVertex2f(-30.0f, -25.0f);
+    glVertex2f(-30.0f, -5.0f);
+    glVertex2f(0.0f, -5.0f);
+    glVertex2f(0.0f, -25.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-30.0f, -25.0f);
+    glVertex2f(-30.0f, -5.0f);
+    glVertex2f(0.0f, -5.0f);
+    glVertex2f(0.0f, -25.0f);
+    glEnd();
+}
+
+void road3()
+{
+      glBegin(GL_POLYGON);
+    glColor3ub(54, 69, 79);
+    glVertex2f(-30.0f, -17.0f);
+    glVertex2f(0.0f, -17.0f);
+    glVertex2f(0.0f, -20.0f);
+    glVertex2f(-30.0f, -20.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(54, 69, 79);
+    glBegin(GL_LINE_LOOP);
+      glVertex2f(-30.0f, -17.0f);
+    glVertex2f(0.0f, -17.0f);
+    glVertex2f(0.0f, -20.0f);
+    glVertex2f(-30.0f, -20.0f);
+    glEnd();
+}
+void small_tree()
+{
+    glLineWidth(2);
+    glColor3ub(160, 82, 4);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-27.0f, -25.0f);
+    glVertex2f(-27.0f, -23.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    glColor3ub(34, 139, 34);
+    glVertex2f(-28.0f, -23.0f);
+    glVertex2f(-27.0f, -22.0f);
+    glVertex2f(-26.0f, -23.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-28.0f, -23.0f);
+    glVertex2f(-27.0f, -22.0f);
+    glVertex2f(-26.0f, -23.0f);
+    glEnd();
+
+     glBegin(GL_POLYGON);
+    glColor3ub(34, 139, 34);
+    glVertex2f(-28.0f, -22.0f);
+    glVertex2f(-27.0f, -21.0f);
+    glVertex2f(-26.0f, -22.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+      glVertex2f(-28.0f, -22.0f);
+    glVertex2f(-27.0f, -21.0f);
+    glVertex2f(-26.0f, -22.0f);
+    glEnd();
+
+}
+void small_trees()
+{
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(0.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(3.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(6.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(9.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(12.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(15.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(18.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(21.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+      glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glScalef(1.0,1.0,1.0);
+    glTranslatef(24.0,0.0,0);
+    small_tree();
+    glPopMatrix();
+
+}
+
+void river()
+{
+      glBegin(GL_POLYGON);
+    glColor3ub(176, 196, 222);
+    glVertex2f(4.0f, -5.0f);
+    glVertex2f(4.0f, -25.0f);
+    glVertex2f(30.0f, -25.0f);
+     glVertex2f(30.0f, -5.0f);
+    glEnd();
+      glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(4.0f, -5.0f);
+    glVertex2f(4.0f, -25.0f);
+    glVertex2f(30.0f, -25.0f);
+     glVertex2f(30.0f, -5.0f);
+    glEnd();
+}
+void boat_body()
+{
+     glBegin(GL_POLYGON);
+    glColor3ub(139, 69, 19);
+    glVertex2f(10.0f, -15.0f);
+    glVertex2f(11.0f, -16.0f);
+    glVertex2f(14.0f, -16.0f);
+     glVertex2f(15.0f, -15.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(10.0f, -15.0f);
+    glVertex2f(11.0f, -16.0f);
+    glVertex2f(14.0f, -16.0f);
+     glVertex2f(15.0f, -15.0f);
+    glEnd();
+}
+
+void boat_semi_circle(float r,float x,float y)
+{
+      glBegin(GL_POLYGON);
+
+    glColor3ub(211, 211, 211);
+
+    // Define semi-circle
+    float radius = r;
+    float centerX = x; // X coordinate of the center
+    float centerY = y; // Y coordinate of the center
+    float pi = 3.14159265359;
+
+    for (int i = 0; i <= 180; i++) {
+        float angle = i * pi / 180.0;
+        glVertex2f(centerX + cos(angle) * radius, centerY + sin(angle) * radius);
+    }
+
+    glEnd();
+
+}
+
+void boat1()
+{
+     glPushMatrix();
+    glTranslatef(_moveBoat, 0.0f, 0.0f);  // Move truck based on _moveBoat variable
+    boat_semi_circle(1.5,12.5,-15.0);
+    boat_body();
+    glPopMatrix();
+}
+void big_tree()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(139, 69, 19);
+    glVertex2f(-27.0f, -17.0f);
+    glVertex2f(-27.0f, -11.0f);
+    glVertex2f(-26.0f, -11.0f);
+     glVertex2f(-26.0f, -17.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-27.0f, -17.0f);
+    glVertex2f(-27.0f, -11.0f);
+    glVertex2f(-26.0f, -11.0f);
+     glVertex2f(-26.0f, -17.0f);
+    glEnd();
+
+    tree_circle(2.0,-27.5f, -11.0f);
+    tree_circle(2.0,-25.5f, -11.0f);
+    tree_circle(2.0,-26.5f, -9.0f);
+}
+void house1_body()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(245, 245, 220);
+    glVertex2f(-24.0f, -17.0f);
+    glVertex2f(-24.0f, -15.0f);
+    glVertex2f(-17.0f, -15.0f);
+    glVertex2f(-17.0f, -17.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-24.0f, -17.0f);
+    glVertex2f(-24.0f, -15.0f);
+    glVertex2f(-17.0f, -15.0f);
+    glVertex2f(-17.0f, -17.0f);
+    glEnd();
+}
+void house1_roof()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(178, 34, 34);
+    glVertex2f(-24.0f, -15.0f);
+    glVertex2f(-24.0f, -14.0f);
+    glVertex2f(-17.0f, -13.0f);
+    glVertex2f(-17.0f, -15.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-24.0f, -15.0f);
+    glVertex2f(-24.0f, -14.0f);
+    glVertex2f(-17.0f, -13.0f);
+    glVertex2f(-17.0f, -15.0f);
+    glEnd();
+}
+void house1()
+{
+    house1_roof();
+    house1_body();
+      glBegin(GL_POLYGON);
+    glColor3ub(1,1,1);
+    glVertex2f(-22.0f, -17.0f);
+    glVertex2f(-22.0f, -16.0f);
+    glVertex2f(-19.0f, -16.0f);
+    glVertex2f(-19.0f, -17.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-22.0f, -17.0f);
+    glVertex2f(-22.0f, -16.0f);
+    glVertex2f(-19.0f, -16.0f);
+    glVertex2f(-19.0f, -17.0f);
+    glEnd();
+}
+void house2()
+{
+    //body
+     glBegin(GL_POLYGON);
+    glColor3ub(245, 245, 220);
+    glVertex2f(-17.0f, -17.0f);
+    glVertex2f(-17.0f, -15.0f);
+    glVertex2f(-12.0f, -15.0f);
+    glVertex2f(-12.0f, -17.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-17.0f, -17.0f);
+    glVertex2f(-17.0f, -15.0f);
+    glVertex2f(-12.0f, -15.0f);
+    glVertex2f(-12.0f, -17.0f);
+    glEnd();
+
+    //roof
+     glBegin(GL_POLYGON);
+    glColor3ub(178, 34, 34);
+    glVertex2f(-17.0f, -15.0f);
+    glVertex2f(-17.0f, -13.5f);
+    glVertex2f(-12.0f, -13.5f);
+    glVertex2f(-12.0f, -15.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(-17.0f, -15.0f);
+    glVertex2f(-17.0f, -13.5f);
+    glVertex2f(-12.0f, -13.5f);
+    glVertex2f(-12.0f, -15.0f);
+    glEnd();
+
+    // Gate
+     glBegin(GL_POLYGON);
+    glColor3ub(255,255,255);
+    glVertex2f(-16.0f, -17.0f);
+    glVertex2f(-16.0f, -15.5f);
+    glVertex2f(-14.0f, -15.5f);
+    glVertex2f(-14.0f, -17.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-16.0f, -17.0f);
+    glVertex2f(-16.0f, -15.5f);
+    glVertex2f(-14.0f, -15.5f);
+    glVertex2f(-14.0f, -17.0f);
+    glEnd();
+}
+void grass_brush(float r,float x,float y)
+{
+      glBegin(GL_POLYGON);
+
+    glColor3ub(218, 165, 32);
+
+    // Define semi-circle
+    float radius = r;
+    float centerX = x; // X coordinate of the center
+    float centerY = y; // Y coordinate of the center
+    float pi = 3.14159265359;
+
+    for (int i = 0; i <= 180; i++) {
+        float angle = i * pi / 180.0;
+        glVertex2f(centerX + cos(angle) * radius, centerY + sin(angle) * radius);
+    }
+
+    glEnd();
+
+}
+void wind_mill_body()
+{
+     glBegin(GL_POLYGON);
+    glColor3ub(211, 211, 211);
+    glVertex2f(-8.0f, -17.0f);
+    glVertex2f(-8.0f, -10.5f);
+    glVertex2f(-7.0f, -10.5f);
+    glVertex2f(-7.0f, -17.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+   glVertex2f(-8.0f, -17.0f);
+    glVertex2f(-8.0f, -10.5f);
+    glVertex2f(-7.0f, -10.5f);
+    glVertex2f(-7.0f, -17.0f);
+    glEnd();
+}
+
+void windmill_circle(float radius, float cX, float cY)
+{
+    glPushMatrix();
+    glTranslatef(cX, cY, 0);
+    glRotatef(_windMill, 0.0f, 0.0f, 1.0f);  // Apply rotation based on _wheelAngle
+    glTranslatef(-cX, -cY, 0);  // Translate back after rotation
+
+    glBegin(GL_POLYGON);
+    for (int i = 0; i < 200; i++)
+    {
+        glColor3ub(153, 0, 0);
+        float pi = 3.1416;
+        float A = (i * 2 * pi) / 200;
+        float r = radius;
+        float x = r * cos(A);
+        float y = r * sin(A);
+        glVertex2f(x + cX, y + cY);
+    }
+    glEnd();
+
+    glPopMatrix();
+}
+void wind_mill()
+{
+   wind_mill_body();
+
+    // Apply rotation to the windmill fans
+    glPushMatrix();
+    glTranslatef(-7.5, -9.5, 0);  // Move to the windmill center
+    glRotatef(_windMill, 0.0f, 0.0f, 1.0f);  // Rotate around the center
+    glTranslatef(7.5, 9.5, 0);  // Move back
+
+    // Fan1
+    glLineWidth(5.0);
+    glColor3ub(133, 94, 66);
+    glBegin(GL_LINES);
+    glVertex2f(-11.0, -13.0);
+    glVertex2f(-4.0, -6.0);
+    glEnd();
+
+    // Fan2
+    glLineWidth(5.0);
+    glColor3ub(133, 94, 66);
+    glBegin(GL_LINES);
+    glVertex2f(-4.0, -13.0);
+    glVertex2f(-11.0, -6.0);
+    glEnd();
+
+    glPopMatrix();
+
+    // Windmill circle at the center
+    windmill_circle(1.2, -7.5, -9.5);
+
+}
+void house3_gate(float r,float x,float y)
+{
+      glBegin(GL_POLYGON);
+
+    glColor3ub(1,1,1);
+
+    // Define semi-circle
+    float radius = r;
+    float centerX = x; // X coordinate of the center
+    float centerY = y; // Y coordinate of the center
+    float pi = 3.14159265359;
+
+    for (int i = 0; i <= 180; i++) {
+        float angle = i * pi / 180.0;
+        glVertex2f(centerX + cos(angle) * radius, centerY + sin(angle) * radius);
+    }
+
+    glEnd();
+
+}
+void house3()
+{
+    //body
+    glBegin(GL_POLYGON);
+    glColor3ub(245, 245, 220);
+    glVertex2f(-5.0f, -17.0f);
+    glVertex2f(-5.0f, -15.0f);
+    glVertex2f(-1.0f, -15.0f);
+    glVertex2f(-1.0f, -17.0f);
+    glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-5.0f, -17.0f);
+    glVertex2f(-5.0f, -15.0f);
+    glVertex2f(-1.0f, -15.0f);
+    glVertex2f(-1.0f, -17.0f);
+    glEnd();
+
+    //Roof
+    glBegin(GL_POLYGON);
+    glColor3ub(178, 34, 34);
+    glVertex2f(-6.0f, -15.0f);
+    glVertex2f(-3.0f, -12.0f);
+    glVertex2f(-0.0f, -15.0f);
+    glEnd();
+     glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+     glVertex2f(-6.0f, -15.0f);
+    glVertex2f(-3.0f, -12.0f);
+    glVertex2f(-0.0f, -15.0f);
+    glEnd();
+
+    house3_gate(1.0,-3.0,-17.0);
+}
+
+void muddy_space_river()
+{
+    glBegin(GL_POLYGON);
+    glColor3ub(102, 76, 51);
+   glVertex2f(4.0f, -5.0f);
+   glVertex2f(30.0f, -5.0f);
+   glVertex2f(30.0f, -6.0f);
+   glVertex2f(4.0f, -6.0f);
+   glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+   glVertex2f(4.0f, -5.0f);
+   glVertex2f(30.0f, -5.0f);
+   glVertex2f(30.0f, -6.0f);
+   glVertex2f(4.0f, -6.0f);
+   glEnd();
+    glBegin(GL_POLYGON);
+    glColor3ub(102, 76, 51);
+   glVertex2f(4.0f, -25.0f);
+   glVertex2f(4.0f, -5.0f);
+   glVertex2f(5.0f, -5.0f);
+   glVertex2f(5.0f, -25.0f);
+   glEnd();
+    glLineWidth(1);
+    glColor3ub(1,1,1);
+    glBegin(GL_LINE_LOOP);
+   glVertex2f(4.0f, -25.0f);
+   glVertex2f(4.0f, -5.0f);
+   glVertex2f(5.0f, -5.0f);
+   glVertex2f(5.0f, -25.0f);
+   glEnd();
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    // Draw sky, road, hills, etc.
+    sky();
+    // Green Land
+    green_land();
+    //River
+    river();
+    // Mudd Space
+    muddy_space_river();
+    line1();
+    main_street();
+    hill1();
+    hill2();
+    hill3();
+    hillBorder();
+    hill_left_Part();
+    hill_right_Part();
+
+    // Draw sun, clouds, and trees
+    sun(2.0, -10.0, 25.0);
+    cloud1();
+    clude2();
+    trees();
+
+    // Draw moving truck and car
+    truck();
+    car();
+
+    // Road2
+    road2();
+    road3();
+
+    // SMall Trees
+    small_trees();
+
+    //Big Tree
+    big_tree();
+
+    // House_01
+    house1();
+    house2();
+    house3();
+
+    grass_brush(2,-10.0,-17.0);
+
+    //Wind Mill
+    wind_mill();
+
+    //boat
+    boat1();
+    glFlush();
+
+}
+
+void update(int value)
+{
+    // Update truck position (move right to left)
+    _moveTruck -= 0.2f;
+    if (_moveTruck < -30.0f)  // Reset position after moving out of screen
+    {
+        _moveTruck = 30.0f;
+    }
+
+    // Update car position (move left to right)
+    _moveCar += 0.2f;
+    if (_moveCar > 30.0f)  // Reset position after moving out of screen
+    {
+        _moveCar = -30.0f;
+    }
+    _moveBoat += 0.2f;
+     if (_moveBoat > 25.0f)  // Reset position after moving out of screen
+    {
+        _moveBoat = 5.0f;
+    }
+
+     _windMill += 5.0f;  // Adjust the rotation speed
+    if (_windMill > 360.0f)
+    {
+        _windMill -= 360.0f;  // Reset the angle after a full rotation
+    }
+
+      // Update cloud1 movement
+    _moveCloud1 += 0.5f * _directionCloud1;  // Move cloud1 based on direction
+    if (_moveCloud1 > 30.0f)  // If cloud1 goes beyond the right edge, reverse direction
+    {
+        _directionCloud1 = -1;  // Move left
+    }
+    if (_moveCloud1 < -30.0f)  // If cloud1 goes beyond the left edge, reverse direction
+    {
+        _directionCloud1 = 1;  // Move right
+    }
+
+    // Update cloud2 movement
+    _moveCloud2 += 0.5f * _directionCloud2;  // Move cloud2 based on direction
+    if (_moveCloud2 < -30.0f)  // If cloud2 goes beyond the left edge, reverse direction
+    {
+        _directionCloud2 = 1;  // Move right
+    }
+    if (_moveCloud2 > 30.0f)  // If cloud2 goes beyond the right edge, reverse direction
+    {
+        _directionCloud2 = -1;  // Move left
+    }
+
+
+    // Rotate wheels based on movement
+    _wheelAngle -= 10.0f;  // Adjust this value to control wheel rotation speed
+    if (_wheelAngle < -360.0f) {
+        _wheelAngle += 360.0f;
+    }
+
+    // Redisplay and call update again
+    glutPostRedisplay();
+    glutTimerFunc(100, update, 0);  // Control the speed of animation
+}
+
+int main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(700, 700);
+    glutCreateWindow("Village View");
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    gluOrtho2D(-30.0, 30.0, -25.0, 30.0);
+    glutDisplayFunc(display);
+    glutTimerFunc(100, update, 0);  // Call update to start animation
+    glutMainLoop();
+    return 0;
+}
